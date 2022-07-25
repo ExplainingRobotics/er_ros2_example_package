@@ -1,0 +1,3 @@
+example_node:
+  ros__parameters:
+    example_parameter: world

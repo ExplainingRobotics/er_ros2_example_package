@@ -20,7 +20,7 @@ find_package(Eigen3 REQUIRED)
 # find_package(<dependency> REQUIRED)
 
 include_directories(include)
-
+set(node_plugins "")
 ###########
 #  BUILD  #
 ###########
@@ -30,6 +30,8 @@ add_library(example_node SHARED
 target_compile_definitions(example_node
   PRIVATE "EXAMPLE_NODE_DLL")
 ament_target_dependencies(example_node rclcpp rclcpp_components rclcpp_action rcpputils std_msgs std_srvs example_interfaces Eigen3)
+rclcpp_components_register_nodes(example_node "example_namespace::ExampleNode")
+set(node_plugins "${node_plugins}example_namespace::ExampleNode;$<TARGET_FILE:example_node>\n")
 
 # This package installs libraries without exporting them.
 # Export the library path to ensure that the installed libraries are available.
@@ -58,7 +60,7 @@ install(TARGETS
 
 install(
     DIRECTORY include/
-    DESTINATION include
+    DESTINATION include/${PROJECT_NAME}
   )
 
 install(
