@@ -73,16 +73,52 @@ install(
     DESTINATION share/${PROJECT_NAME}
   )
 
+#############
+#  TESTING  #
+#############
+
 if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  # the following line skips the linter which checks for copyrights
-  # comment the line when a copyright and license is added to all source files
-  set(ament_cmake_copyright_FOUND TRUE)
-  # the following line skips cpplint (only works in a git repo)
-  # comment the line when this package is in a git repo and when
-  # a copyright and license is added to all source files
-  set(ament_cmake_cpplint_FOUND TRUE)
-  ament_lint_auto_find_test_dependencies()
+  # LINT TESTING
+  # find_package(ament_lint_auto REQUIRED)
+  # # the following line skips the linter which checks for copyrights
+  # # comment the line when a copyright and license is added to all source files
+  # set(ament_cmake_copyright_FOUND TRUE)
+  # # the following line skips cpplint (only works in a git repo)
+  # # comment the line when this package is in a git repo and when
+  # # a copyright and license is added to all source files
+  # set(ament_cmake_cpplint_FOUND TRUE)
+  # ament_lint_auto_find_test_dependencies()
+
+  # UNIT TESTING
+  find_package(ament_cmake_gtest REQUIRED)
+  # find_package(ament_cmake_cppcheck REQUIRED)
+  # find_package(ament_cmake_cpplint REQUIRED)
+  # find_package(ament_cmake_lint_cmake REQUIRED)
+  # find_package(ament_cmake_uncrustify REQUIRED)
+  # find_package(launch_testing_ament_cmake REQUIRED)
+
+  ament_add_gtest_executable(example_test test/example_test.cpp)
+  target_link_libraries(example_test example_node)
+
+  ament_add_test(example_test
+    GENERATE_RESULT_FOR_RETURN_CODE_ZERO
+    TIMEOUT 180
+    COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/test/example_test.launch.py"
+    ENV
+      TEST_EXECUTABLE=$<TARGET_FILE:example_test>
+  )
+  install(
+    TARGETS
+    example_test
+    DESTINATION lib/${PROJECT_NAME}
+  )
+
+  # Install test launch config files.
+  install(DIRECTORY
+    test
+    DESTINATION share/${PROJECT_NAME}
+    USE_SOURCE_PERMISSIONS
+  )
 endif()
 
 ament_package()

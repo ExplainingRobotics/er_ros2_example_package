@@ -18,6 +18,7 @@ Only search for
 * example_standalone (Executable Name)
 * EXAMPLE_NODE_DLL (DLL Name)
 * er_ros2_example_package (Package Name)
+* example_test (Test Name)
 
 and replace them with your new names. Then rename the folder and files
 
@@ -25,8 +26,24 @@ and replace them with your new names. Then rename the folder and files
 * example_standalone.cpp
 * include/er_ros2_example_package
 * example_node.hpp
+* example_node.yaml
+* example_composed_launch.py
+* example_external_composed_launch.py
+* example_standalone_launch.py
+* example_test.cpp
+* example_test.launch.py (make sure it is chmod +x for running tests)
 
 ## Launch
 `` 
 ros2 launch er_ros2_example_package example_standalone_launch.py
+``
+
+## Test
+go to `/build/er_ros2_example_package` and execute
+`` 
+ctest -V -R example_test
+``
+or
+`` 
+colcon test --packages-select er_ros2_example_package
 ``

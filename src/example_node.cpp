@@ -135,20 +135,20 @@ namespace example_namespace
         auto result = std::make_shared<example_interfaces::action::Fibonacci::Result>();
 
         for (int i = 1; (i < goal->order) && rclcpp::ok(); ++i) {
-        // Check if there is a cancel request
-        if (goal_handle->is_canceling()) {
-            result->sequence = sequence;
-            goal_handle->canceled(result);
-            RCLCPP_INFO(this->get_logger(), "Goal Canceled");
-            return;
-        }
-        // Update sequence
-        sequence.push_back(sequence[i] + sequence[i - 1]);
-        // Publish feedback
-        goal_handle->publish_feedback(feedback);
-        RCLCPP_INFO(this->get_logger(), "Publish Feedback");
+            // Check if there is a cancel request
+            if (goal_handle->is_canceling()) {
+                result->sequence = sequence;
+                goal_handle->canceled(result);
+                RCLCPP_INFO(this->get_logger(), "Goal Canceled");
+                return;
+            }
+            // Update sequence
+            sequence.push_back(sequence[i] + sequence[i - 1]);
+            // Publish feedback
+            goal_handle->publish_feedback(feedback);
+            RCLCPP_INFO(this->get_logger(), "Publish Feedback");
 
-        loop_rate.sleep();
+            loop_rate.sleep();
         }
 
         // Check if goal is done
