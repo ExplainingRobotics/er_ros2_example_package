@@ -32,6 +32,7 @@ class ExampleNode : public rclcpp_lifecycle::LifecycleNode
 {
 public:
     COMPOSITION_PUBLIC ExampleNode(rclcpp::NodeOptions options);
+    COMPOSITION_PUBLIC ExampleNode(rclcpp::NodeOptions options, bool activate_lifecycle);
 
 protected:
   /**
@@ -80,6 +81,9 @@ private:
     void execute(const std::shared_ptr<rclcpp_action::ServerGoalHandle<example_interfaces::action::Fibonacci>> goal_handle);
     rclcpp_action::GoalResponse handleGoal(const rclcpp_action::GoalUUID & uuid,std::shared_ptr<const example_interfaces::action::Fibonacci::Goal> goal);
     void handleAccepted(const std::shared_ptr<rclcpp_action::ServerGoalHandle<example_interfaces::action::Fibonacci>> goal_handle);
+    
+    bool activate_lifecycle_;
+    
     long count_;
     bool positive_ = true;
     std::shared_ptr<rclcpp::ParameterEventHandler> param_subscriber_;

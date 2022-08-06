@@ -6,12 +6,24 @@ namespace example_namespace
     ExampleNode::ExampleNode(rclcpp::NodeOptions options)
     : rclcpp_lifecycle::LifecycleNode("example_node", options)
     {
+        activate_lifecycle_=true;
         //Declaring Parameters for this node
         this->declare_parameter<std::string>("example_parameter");
 
         this->configure();
     }
+    ExampleNode::ExampleNode(rclcpp::NodeOptions options, bool activate_lifecycle)
+    : rclcpp_lifecycle::LifecycleNode("example_node", options)
+    {
+        activate_lifecycle_=activate_lifecycle;
+        //Declaring Parameters for this node
+        this->declare_parameter<std::string>("example_parameter");
 
+        this->configure();
+        if(!activate_lifecycle_){
+            this->activate();
+        }
+    }
     void ExampleNode::registerParameters(){
         RCLCPP_INFO_STREAM(this->get_logger(),"Reading Parameters");
         
