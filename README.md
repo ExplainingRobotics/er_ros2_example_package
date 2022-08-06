@@ -47,3 +47,15 @@ or
 `` 
 colcon test --packages-select er_ros2_example_package
 ``
+
+## Debugging
+
+To use GDB add 
+`` 
+add_compile_options(-g)
+``
+to your `CMakeLists.txt` and add
+`` 
+prefix=['xterm -e gdb -ex run --args'],
+``
+to your launch file. After a crash type `backtrace` to get the backtrace

@@ -19,6 +19,7 @@ def generate_launch_description():
             name='example_node',
             output="screen",
             emulate_tty=True,
+            prefix=['xterm -e gdb -ex run --args'],
             parameters=[
                 config
             ]
