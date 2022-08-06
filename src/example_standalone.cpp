@@ -4,7 +4,7 @@ int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
   rclcpp::NodeOptions options;
-  rclcpp::spin(std::make_shared<example_namespace::ExampleNode>(options));
+  rclcpp::spin(std::make_shared<example_namespace::ExampleNode>(options)->get_node_base_interface());
   rclcpp::shutdown();
   return 0;
 }

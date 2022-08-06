@@ -14,6 +14,8 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(rcpputils REQUIRED)
+find_package(rclcpp_lifecycle REQUIRED)
+find_package(lifecycle_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
 find_package(example_interfaces REQUIRED)
@@ -29,10 +31,11 @@ set(node_plugins "")
 ###########
 
 add_library(example_node SHARED
-            src/example_node.cpp)
+            src/example_node.cpp
+            src/example_lifecycle_management.cpp)
 target_compile_definitions(example_node
   PRIVATE "EXAMPLE_NODE_DLL")
-ament_target_dependencies(example_node rclcpp rclcpp_components rclcpp_action rcpputils std_msgs std_srvs example_interfaces Eigen3)
+ament_target_dependencies(example_node rclcpp rclcpp_components rclcpp_action rcpputils rclcpp_lifecycle lifecycle_msgs std_msgs std_srvs example_interfaces Eigen3)
 rclcpp_components_register_nodes(example_node "example_namespace::ExampleNode")
 set(node_plugins "${node_plugins}example_namespace::ExampleNode;$<TARGET_FILE:example_node>\n")
 

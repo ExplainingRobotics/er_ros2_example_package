@@ -5,16 +5,19 @@
 #include <vector>
 #include <string>
 #include <thread>
-
+#include <chrono>
 
 // ROS
 #include "rclcpp/rclcpp.hpp"
+#include "er_ros2_example_package/visibility.h"
 #include "rcpputils/asserts.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
-
-#include "er_ros2_example_package/visibility.h"
+#include "rclcpp_lifecycle/lifecycle_node.hpp"
+#include "rclcpp_lifecycle/lifecycle_publisher.hpp"
 
 //Messages
+#include "lifecycle_msgs/msg/transition.hpp"
+#include "lifecycle_msgs/msg/state.hpp"
 #include "std_msgs/msg/string.hpp"
 #include "std_srvs/srv/set_bool.hpp"
 #include "example_interfaces/action/fibonacci.hpp"
@@ -25,10 +28,43 @@
 namespace example_namespace
 {
 
-class ExampleNode : public rclcpp::Node
+class ExampleNode : public rclcpp_lifecycle::LifecycleNode
 {
 public:
     COMPOSITION_PUBLIC ExampleNode(rclcpp::NodeOptions options);
+
+protected:
+  /**
+   * @brief Sets up required params and services. Loads map and its parameters from the file
+   * @param state Lifecycle Node's state
+   * @return Success or Failure
+   */
+  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_configure(const rclcpp_lifecycle::State & state) override;
+  /**
+   * @brief Start publishing the map using the latched topic
+   * @param state Lifecycle Node's state
+   * @return Success or Failure
+   */
+  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_activate(const rclcpp_lifecycle::State & state) override;
+  /**
+   * @brief Stops publishing the latched topic
+   * @param state Lifecycle Node's state
+   * @return Success or Failure
+   */
+  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_deactivate(const rclcpp_lifecycle::State & state) override;
+  /**
+   * @brief Resets the member variables
+   * @param state Lifecycle Node's state
+   * @return Success or Failure
+   */
+  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_cleanup(const rclcpp_lifecycle::State & state) override;
+  /**
+   * @brief Called when in Shutdown state
+   * @param state Lifecycle Node's state
+   * @return Success or Failure
+   */
+  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_shutdown(const rclcpp_lifecycle::State & state) override;
+
 
 private:
     void publishTimer();
@@ -50,11 +86,10 @@ private:
     rclcpp::Subscription<rcl_interfaces::msg::ParameterEvent>::SharedPtr param_sub;
     rclcpp::AsyncParametersClient::SharedPtr param_client_;
     std::string example_parameter_;
-    std::shared_ptr<rclcpp::ParameterCallbackHandle> param_example_handle_;
-    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr pub_string_;
+    rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::String>::SharedPtr pub_string_;
     rclcpp::TimerBase::SharedPtr timer_publish_;
     rclcpp::Subscription<std_msgs::msg::String>::SharedPtr sub_string_;
-    
+
     rclcpp::Service<std_srvs::srv::SetBool>::SharedPtr service_set_bool_;
     rclcpp_action::Server<example_interfaces::action::Fibonacci>::SharedPtr action_server_;
     Eigen::Vector2d eigen_vector_;

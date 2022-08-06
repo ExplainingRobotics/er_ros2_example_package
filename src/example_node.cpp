@@ -1,30 +1,20 @@
-#include <chrono>
-
 #include "er_ros2_example_package/example_node.hpp"
 
 using namespace std::chrono_literals;
 namespace example_namespace
 {
     ExampleNode::ExampleNode(rclcpp::NodeOptions options)
-    : Node("example_node", options)
+    : rclcpp_lifecycle::LifecycleNode("example_node", options)
     {
-        // Register Interfaces
-        registerParameters();
-        registerSubscriber();
-        registerPublisher();
-        registerServices();
-        registerActions();
-        // Check that Eigen (external Library) works
-        RCLCPP_INFO_STREAM(this->get_logger(),"Eigen Vecotr Size: " << eigen_vector_.size());
-        // Create Timer to publish
-        timer_publish_ = create_wall_timer(500ms, std::bind(&ExampleNode::publishTimer, this));
+        //Declaring Parameters for this node
+        this->declare_parameter<std::string>("example_parameter");
+
+        this->configure();
     }
 
     void ExampleNode::registerParameters(){
         RCLCPP_INFO_STREAM(this->get_logger(),"Reading Parameters");
-        //Declaring Parameters for this node
-        this->declare_parameter<std::string>("example_parameter");
-
+        
         //For Handling Parameter changes
         param_client_ = std::make_shared<rclcpp::AsyncParametersClient>(this,this->get_name());
         param_sub = param_client_->on_parameter_event(std::bind(&ExampleNode::onParamEvent,this,std::placeholders::_1));
@@ -86,6 +76,10 @@ namespace example_namespace
     
     void ExampleNode::publishTimer()
     {
+        if (!pub_string_->is_activated()) {
+            RCLCPP_INFO_THROTTLE(this->get_logger(),*this->get_clock(),10000,"Lifecycle publisher is currently inactive. Messages are not published.");
+            return;
+        }
         auto message = std_msgs::msg::String();
         if(positive_){
             message.data = "Hello, " + example_parameter_  + "! " + std::to_string(count_++);
@@ -97,9 +91,19 @@ namespace example_namespace
     }
     void ExampleNode::callbackString(const std_msgs::msg::String & msg)
     {
+        if(this->get_current_state().id() != lifecycle_msgs::msg::State::PRIMARY_STATE_ACTIVE){
+            RCLCPP_INFO_THROTTLE(this->get_logger(),*this->get_clock(),10000,"Lifecycle Node is currently not active. Messages are not processed.");
+            return;
+        }
         RCLCPP_INFO(this->get_logger(), "I heard: '%s'", msg.data.c_str());
     }
     void ExampleNode::callbackService(const std::shared_ptr<rmw_request_id_t> request_header, const std::shared_ptr<std_srvs::srv::SetBool::Request> request, const std::shared_ptr<std_srvs::srv::SetBool::Response> response){
+        if(this->get_current_state().id() != lifecycle_msgs::msg::State::PRIMARY_STATE_ACTIVE){
+            RCLCPP_INFO(this->get_logger(),"Lifecycle Node is currently not active. Service responds with failure.");
+            response->success = false;
+            response->message = "Lifecycle Node not active";
+            return;
+        }
         (void)request_header;
         positive_ = request->data;
         response->success = true;
@@ -107,6 +111,10 @@ namespace example_namespace
     }
     rclcpp_action::GoalResponse ExampleNode::handleGoal(const rclcpp_action::GoalUUID & uuid,std::shared_ptr<const example_interfaces::action::Fibonacci::Goal> goal)
     {
+        if(this->get_current_state().id() != lifecycle_msgs::msg::State::PRIMARY_STATE_ACTIVE){
+            RCLCPP_INFO(this->get_logger(),"Lifecycle Node is currently not active. Action Server responds with Reject.");
+            return rclcpp_action::GoalResponse::REJECT;
+        }
         RCLCPP_INFO(this->get_logger(), "Received goal request with order %d", goal->order);
         (void)uuid;
         // Let's reject sequences that are over 9000
@@ -161,9 +169,8 @@ namespace example_namespace
 
     void ExampleNode::handleAccepted(const std::shared_ptr<rclcpp_action::ServerGoalHandle<example_interfaces::action::Fibonacci>> goal_handle)
     {
-        using namespace std::placeholders;
         // this needs to return quickly to avoid blocking the executor, so spin up a new thread
-        std::thread{std::bind(&ExampleNode::execute, this, _1), goal_handle}.detach();
+        std::thread{std::bind(&ExampleNode::execute, this, std::placeholders::_1), goal_handle}.detach();
     }
 } // namespace 
 
