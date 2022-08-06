@@ -1,5 +1,8 @@
 #include "er_ros2_example_package/example_node.hpp"
 
+#include <cinttypes>
+#include <unistd.h>
+
 using namespace std::chrono_literals;
 namespace example_namespace
 {
@@ -92,22 +95,27 @@ namespace example_namespace
             RCLCPP_INFO_THROTTLE(this->get_logger(),*this->get_clock(),10000,"Lifecycle publisher is currently inactive. Messages are not published.");
             return;
         }
-        auto message = std_msgs::msg::String();
+        std_msgs::msg::String::UniquePtr message(new std_msgs::msg::String());
         if(positive_){
-            message.data = "Hello, " + example_parameter_  + "! " + std::to_string(count_++);
+            message->data = "Hello, " + example_parameter_  + "! " + std::to_string(count_++);
         }else{
-            message.data = "Hello, " + example_parameter_  + "! " + std::to_string(count_--);
-        }        
-        RCLCPP_INFO(this->get_logger(), "Publisher: '%s'", message.data.c_str());
-        pub_string_->publish(message);
+            message->data = "Hello, " + example_parameter_  + "! " + std::to_string(count_--);
+        }
+        RCLCPP_INFO(this->get_logger(), "Publisher: '%s'", message->data.c_str());        
+        RCLCPP_INFO_STREAM(this->get_logger(), "Published message with address: 0x" << message.get() << " Process: " << getpid());
+        std::weak_ptr<std::remove_pointer<decltype(pub_string_.get())>::type> captured_pub = pub_string_;
+        auto pub_ptr = captured_pub.lock();
+        pub_ptr->publish(std::move(message));
+        // pub_string_->publish(std::move(message));
     }
-    void ExampleNode::callbackString(const std_msgs::msg::String & msg)
+    void ExampleNode::callbackString(std_msgs::msg::String::ConstSharedPtr msg)
     {
         if(this->get_current_state().id() != lifecycle_msgs::msg::State::PRIMARY_STATE_ACTIVE){
             RCLCPP_INFO_THROTTLE(this->get_logger(),*this->get_clock(),10000,"Lifecycle Node is currently not active. Messages are not processed.");
             return;
         }
         RCLCPP_INFO(this->get_logger(), "I heard: '%s'", msg.data.c_str());
+        RCLCPP_INFO_STREAM(this->get_logger(), "Recieved message with address: 0x" << msg.get() << " Process: " << getpid());
     }
     void ExampleNode::callbackService(const std::shared_ptr<rmw_request_id_t> request_header, const std::shared_ptr<std_srvs::srv::SetBool::Request> request, const std::shared_ptr<std_srvs::srv::SetBool::Response> response){
         if(this->get_current_state().id() != lifecycle_msgs::msg::State::PRIMARY_STATE_ACTIVE){

@@ -23,7 +23,7 @@ def generate_launch_description():
                     package='er_ros2_example_package',
                     plugin='example_namespace::ExampleNode',
                     name='example_node',
-                    remappings=[],
+                    remappings=[("/example_node/subscribe", "/example_node/publish")],
                     parameters=[config]),
             ],
             output='both',
