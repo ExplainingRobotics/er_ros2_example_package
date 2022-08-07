@@ -114,7 +114,7 @@ namespace example_namespace
             RCLCPP_INFO_THROTTLE(this->get_logger(),*this->get_clock(),10000,"Lifecycle Node is currently not active. Messages are not processed.");
             return;
         }
-        RCLCPP_INFO(this->get_logger(), "I heard: '%s'", msg.data.c_str());
+        RCLCPP_INFO(this->get_logger(), "I heard: '%s'", msg->data.c_str());
         RCLCPP_INFO_STREAM(this->get_logger(), "Recieved message with address: 0x" << msg.get() << " Process: " << getpid());
     }
     void ExampleNode::callbackService(const std::shared_ptr<rmw_request_id_t> request_header, const std::shared_ptr<std_srvs::srv::SetBool::Request> request, const std::shared_ptr<std_srvs::srv::SetBool::Response> response){

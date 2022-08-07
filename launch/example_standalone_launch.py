@@ -20,6 +20,7 @@ def generate_launch_description():
             output="screen",
             emulate_tty=True,
             prefix=['xterm -e gdb -ex run --args'],
+            remappings=[("/example_node/subscribe", "/example_node/publish")],
             parameters=[
                 config
             ]
