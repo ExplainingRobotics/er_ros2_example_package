@@ -31,8 +31,11 @@ namespace example_namespace
 class ExampleNode : public rclcpp_lifecycle::LifecycleNode
 {
 public:
-    COMPOSITION_PUBLIC ExampleNode(rclcpp::NodeOptions options);
-    COMPOSITION_PUBLIC ExampleNode(rclcpp::NodeOptions options, bool activate_lifecycle);
+  /**
+   * @param options Additional options to control creation of the node.
+   * @param activate_lifecycle If LifecycleNode management should be activated.
+   */
+  COMPOSITION_PUBLIC ExampleNode(rclcpp::NodeOptions options, bool activate_lifecycle = true);
 
 protected:
   /**

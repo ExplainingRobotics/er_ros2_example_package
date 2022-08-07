@@ -6,15 +6,6 @@
 using namespace std::chrono_literals;
 namespace example_namespace
 {
-    ExampleNode::ExampleNode(rclcpp::NodeOptions options)
-    : rclcpp_lifecycle::LifecycleNode("example_node", options)
-    {
-        activate_lifecycle_=true;
-        //Declaring Parameters for this node
-        this->declare_parameter<std::string>("example_parameter");
-
-        this->configure();
-    }
     ExampleNode::ExampleNode(rclcpp::NodeOptions options, bool activate_lifecycle)
     : rclcpp_lifecycle::LifecycleNode("example_node", options)
     {
