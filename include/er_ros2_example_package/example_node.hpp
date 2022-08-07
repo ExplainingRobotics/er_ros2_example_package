@@ -74,7 +74,7 @@ private:
     void registerServices();
     void registerActions();
     void registerParameters();
-    void callbackString(const std_msgs::msg::String & msg);
+    void callbackString(std_msgs::msg::String::ConstSharedPtr msg);
     void onParamEvent(rcl_interfaces::msg::ParameterEvent::UniquePtr event);
     void callbackService(const std::shared_ptr<rmw_request_id_t> request_header, const std::shared_ptr<std_srvs::srv::SetBool::Request> request, const std::shared_ptr<std_srvs::srv::SetBool::Response> response);
     rclcpp_action::CancelResponse handleCancel(const std::shared_ptr<rclcpp_action::ServerGoalHandle<example_interfaces::action::Fibonacci>> goal_handle);
