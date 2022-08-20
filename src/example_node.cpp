@@ -12,6 +12,7 @@ namespace example_namespace
         activate_lifecycle_=activate_lifecycle;
         //Declaring Parameters for this node
         this->declare_parameter<std::string>("example_parameter");
+        this->declare_parameter<int>("heartbeat_period");
 
         this->configure();
         if(!activate_lifecycle_){
@@ -26,12 +27,25 @@ namespace example_namespace
         param_sub = param_client_->on_parameter_event(std::bind(&ExampleNode::onParamEvent,this,std::placeholders::_1));
 
         //Read Parameter
+        int heartbeat_period_param;
         rcpputils::assert_true(this->get_parameter("example_parameter", example_parameter_),"Failed to get param 'example_parameter'");
+        rcpputils::assert_true(this->get_parameter("heartbeat_period", heartbeat_period_param),"Failed to get param 'heartbeat_period'");
+        heartbeat_period_ = std::chrono::milliseconds(heartbeat_period_param);
         RCLCPP_INFO_STREAM(this->get_logger(),example_parameter_);
     }
     void ExampleNode::registerPublisher(){
         RCLCPP_INFO_STREAM(this->get_logger(),"Register Publisher");
         pub_string_ = create_publisher<std_msgs::msg::String>("~/publish", 10);
+
+        rclcpp::QoS heartbeat_qos(1);
+        heartbeat_qos
+            .liveliness(RMW_QOS_POLICY_LIVELINESS_MANUAL_BY_TOPIC)
+            .liveliness_lease_duration(heartbeat_period_ + LEASE_DELTA)
+            .deadline(heartbeat_period_ + LEASE_DELTA);
+
+        // assert liveliness on the 'heartbeat' topic
+        pub_heartbeat_ = this->create_publisher<builtin_interfaces::msg::Time>("~/heartbeat", heartbeat_qos);
+        
     }
     void ExampleNode::registerSubscriber(){
         RCLCPP_INFO_STREAM(this->get_logger(),"Register Subscriber");
@@ -98,6 +112,12 @@ namespace example_namespace
         auto pub_ptr = captured_pub.lock();
         pub_ptr->publish(std::move(message));
         // pub_string_->publish(std::move(message));
+    }
+    void ExampleNode::publishHeartbeat()
+    {
+        auto message = builtin_interfaces::msg::Time();
+        message = get_clock()->now();
+        pub_heartbeat_->publish(message);
     }
     void ExampleNode::callbackString(std_msgs::msg::String::ConstSharedPtr msg)
     {

@@ -21,9 +21,13 @@
 #include "std_msgs/msg/string.hpp"
 #include "std_srvs/srv/set_bool.hpp"
 #include "example_interfaces/action/fibonacci.hpp"
-
+#include "builtin_interfaces/msg/time.hpp"
 //External Libs
 #include <eigen3/Eigen/Dense>
+
+using namespace std::chrono_literals;
+
+constexpr std::chrono::milliseconds LEASE_DELTA = 20ms; ///< Buffer added to heartbeat to define lease.
 
 namespace example_namespace
 {
@@ -75,6 +79,10 @@ private:
    * @brief Timer Callback to publish Data
    */
   void publishTimer();
+  /**
+   * @brief Timer Callback to publish Data
+   */
+  void publishHeartbeat();
   /**
    * @brief Registers all publishers
    */
@@ -136,19 +144,24 @@ private:
   void handleAccepted(const std::shared_ptr<rclcpp_action::ServerGoalHandle<example_interfaces::action::Fibonacci>> goal_handle);
   
   bool activate_lifecycle_;
-  
-  long count_;
-  bool positive_ = true;
+  std::chrono::milliseconds heartbeat_period_;
+  std::string example_parameter_;
+
   std::shared_ptr<rclcpp::ParameterEventHandler> param_subscriber_;
   rclcpp::Subscription<rcl_interfaces::msg::ParameterEvent>::SharedPtr param_sub;
   rclcpp::AsyncParametersClient::SharedPtr param_client_;
-  std::string example_parameter_;
+
+  rclcpp_lifecycle::LifecyclePublisher<builtin_interfaces::msg::Time>::SharedPtr pub_heartbeat_;
+  rclcpp::TimerBase::SharedPtr timer_heartbeat_;
+
   rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::String>::SharedPtr pub_string_;
   rclcpp::TimerBase::SharedPtr timer_publish_;
   rclcpp::Subscription<std_msgs::msg::String>::SharedPtr sub_string_;
-
   rclcpp::Service<std_srvs::srv::SetBool>::SharedPtr service_set_bool_;
   rclcpp_action::Server<example_interfaces::action::Fibonacci>::SharedPtr action_server_;
+
+  long count_;
+  bool positive_ = true;
   Eigen::Vector2d eigen_vector_;
 };
 

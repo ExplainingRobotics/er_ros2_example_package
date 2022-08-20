@@ -27,6 +27,7 @@ ExampleNode::on_configure(const rclcpp_lifecycle::State &)
     RCLCPP_INFO_STREAM(this->get_logger(),"Eigen Vecotr Size: " << eigen_vector_.size());
     // Create Timer to publish
     timer_publish_ = create_wall_timer(500ms, std::bind(&ExampleNode::publishTimer, this));
+    timer_heartbeat_ = create_wall_timer(heartbeat_period_,std::bind(&ExampleNode::publishHeartbeat, this));
     return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
 
