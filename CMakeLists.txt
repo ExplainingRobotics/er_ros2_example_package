@@ -18,8 +18,11 @@ find_package(rclcpp_lifecycle REQUIRED)
 find_package(lifecycle_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 find_package(example_interfaces REQUIRED)
 find_package(Eigen3 REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_ros REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
@@ -35,7 +38,7 @@ add_library(example_node SHARED
             src/example_lifecycle_management.cpp)
 target_compile_definitions(example_node
   PRIVATE "EXAMPLE_NODE_DLL")
-ament_target_dependencies(example_node rclcpp rclcpp_components rclcpp_action rcpputils rclcpp_lifecycle lifecycle_msgs std_msgs std_srvs example_interfaces Eigen3)
+ament_target_dependencies(example_node rclcpp rclcpp_components rclcpp_action rcpputils rclcpp_lifecycle lifecycle_msgs std_msgs std_srvs example_interfaces Eigen3 tf2 tf2_ros geometry_msgs)
 rclcpp_components_register_nodes(example_node "example_namespace::ExampleNode")
 set(node_plugins "${node_plugins}example_namespace::ExampleNode;$<TARGET_FILE:example_node>\n")
 

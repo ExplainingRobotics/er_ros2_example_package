@@ -112,6 +112,36 @@ namespace example_namespace
         auto pub_ptr = captured_pub.lock();
         pub_ptr->publish(std::move(message));
         // pub_string_->publish(std::move(message));
+
+        geometry_msgs::msg::TransformStamped t;
+        t.header.stamp = this->get_clock()->now();
+        t.header.frame_id = "From";
+        t.child_frame_id = "To";
+        t.transform.translation.x = 1;
+        t.transform.translation.y = 1;
+        t.transform.translation.z = 1.0;
+        tf2::Quaternion q;
+        q.setRPY(0, 0, 1.57);
+        t.transform.rotation.x = q.x();
+        t.transform.rotation.y = q.y();
+        t.transform.rotation.z = q.z();
+        t.transform.rotation.w = q.w();
+
+        // Send the transformation
+        tf_broadcaster_->sendTransform(t);
+
+        geometry_msgs::msg::TransformStamped transformStamped;
+        std::string toFrameRel = "To";
+        std::string fromFrameRel = "From";
+        try {
+          transformStamped = tf_buffer_->lookupTransform(
+            toFrameRel, fromFrameRel,
+            tf2::TimePointZero);
+        } catch (tf2::TransformException & ex) {
+          RCLCPP_INFO(
+            this->get_logger(), "Could not transform %s to %s: %s",
+            fromFrameRel.c_str(), toFrameRel.c_str(), ex.what());
+        }
     }
     void ExampleNode::publishHeartbeat()
     {

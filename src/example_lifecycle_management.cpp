@@ -28,6 +28,12 @@ ExampleNode::on_configure(const rclcpp_lifecycle::State &)
     // Create Timer to publish
     timer_publish_ = create_wall_timer(500ms, std::bind(&ExampleNode::publishTimer, this));
     timer_heartbeat_ = create_wall_timer(heartbeat_period_,std::bind(&ExampleNode::publishHeartbeat, this));
+    tf_buffer_ =
+      std::make_unique<tf2_ros::Buffer>(this->get_clock());
+    transform_listener_ =
+      std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
+    tf_broadcaster_ =
+      std::make_unique<tf2_ros::TransformBroadcaster>(*this);
     return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
 
