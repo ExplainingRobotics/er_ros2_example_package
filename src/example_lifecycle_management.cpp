@@ -1,5 +1,25 @@
+// Copyright (c) 2022 ExplainingRobotics
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 #include "er_ros2_example_package/example_node.hpp"
-using namespace std::chrono_literals;
+
 namespace example_namespace
 {
 /// Transition callback for state configuring
@@ -16,25 +36,29 @@ namespace example_namespace
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 ExampleNode::on_configure(const rclcpp_lifecycle::State &)
 {
-    RCLCPP_INFO(get_logger(), "on_configure() is called.");
-    // Register Interfaces
-    registerParameters();
-    registerSubscriber();
-    registerPublisher();
-    registerServices();
-    registerActions();
-    // Check that Eigen (external Library) works
-    RCLCPP_INFO_STREAM(this->get_logger(),"Eigen Vecotr Size: " << eigen_vector_.size());
-    // Create Timer to publish
-    timer_publish_ = create_wall_timer(500ms, std::bind(&ExampleNode::publishTimer, this));
-    timer_heartbeat_ = create_wall_timer(heartbeat_period_,std::bind(&ExampleNode::publishHeartbeat, this));
-    tf_buffer_ =
-      std::make_unique<tf2_ros::Buffer>(this->get_clock());
-    transform_listener_ =
-      std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
-    tf_broadcaster_ =
-      std::make_unique<tf2_ros::TransformBroadcaster>(*this);
-    return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
+  RCLCPP_INFO(get_logger(), "on_configure() is called.");
+  // Register Interfaces
+  registerParameters();
+  registerSubscriber();
+  registerPublisher();
+  registerServices();
+  registerActions();
+  // Check that Eigen (external Library) works
+  RCLCPP_INFO_STREAM(this->get_logger(), "Eigen Vecotr Size: " << eigen_vector_.size());
+  // Create Timer to publish
+  timer_publish_ =
+    create_wall_timer(
+    std::chrono::milliseconds(500),
+    std::bind(&ExampleNode::publishTimer, this));
+  timer_heartbeat_ =
+    create_wall_timer(heartbeat_period_, std::bind(&ExampleNode::publishHeartbeat, this));
+  tf_buffer_ =
+    std::make_unique<tf2_ros::Buffer>(this->get_clock());
+  transform_listener_ =
+    std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
+  tf_broadcaster_ =
+    std::make_unique<tf2_ros::TransformBroadcaster>(*this);
+  return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
 
 /// Transition callback for state activating
@@ -49,27 +73,27 @@ ExampleNode::on_configure(const rclcpp_lifecycle::State &)
  * TRANSITION_CALLBACK_ERROR or any uncaught exceptions to "errorprocessing"
  */
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-ExampleNode::on_activate(const rclcpp_lifecycle::State &state)
+ExampleNode::on_activate(const rclcpp_lifecycle::State & state)
 {
-    RCLCPP_INFO(this->get_logger(), "on_activate() is called.");
-    // The parent class method automatically transition on managed entities
-    // (currently, LifecyclePublisher).
-    // pub_->on_activate() could also be called manually here.
-    // Overriding this method is optional, a lot of times the default is enough.
-    LifecycleNode::on_activate(state);
+  RCLCPP_INFO(this->get_logger(), "on_activate() is called.");
+  // The parent class method automatically transition on managed entities
+  // (currently, LifecyclePublisher).
+  // pub_->on_activate() could also be called manually here.
+  // Overriding this method is optional, a lot of times the default is enough.
+  LifecycleNode::on_activate(state);
 
-    // Let's sleep for 2 seconds.
-    // We emulate we are doing important
-    // work in the activating phase.
-    std::this_thread::sleep_for(2s);
+  // Let's sleep for 2 seconds.
+  // We emulate we are doing important
+  // work in the activating phase.
+  std::this_thread::sleep_for(std::chrono::seconds(2));
 
-    // We return a success and hence invoke the transition to the next
-    // step: "active".
-    // If we returned TRANSITION_CALLBACK_FAILURE instead, the state machine
-    // would stay in the "inactive" state.
-    // In case of TRANSITION_CALLBACK_ERROR or any thrown exception within
-    // this callback, the state machine transitions to state "errorprocessing".
-    return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
+  // We return a success and hence invoke the transition to the next
+  // step: "active".
+  // If we returned TRANSITION_CALLBACK_FAILURE instead, the state machine
+  // would stay in the "inactive" state.
+  // In case of TRANSITION_CALLBACK_ERROR or any thrown exception within
+  // this callback, the state machine transitions to state "errorprocessing".
+  return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
 
 /// Transition callback for state deactivating
@@ -84,23 +108,23 @@ ExampleNode::on_activate(const rclcpp_lifecycle::State &state)
  * TRANSITION_CALLBACK_ERROR or any uncaught exceptions to "errorprocessing"
  */
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-ExampleNode::on_deactivate(const rclcpp_lifecycle::State &state)
+ExampleNode::on_deactivate(const rclcpp_lifecycle::State & state)
 {
-    // The parent class method automatically transition on managed entities
-    // (currently, LifecyclePublisher).
-    // pub_->on_deactivate() could also be called manually here.
-    // Overriding this method is optional, a lot of times the default is enough.
-    LifecycleNode::on_deactivate(state);
+  // The parent class method automatically transition on managed entities
+  // (currently, LifecyclePublisher).
+  // pub_->on_deactivate() could also be called manually here.
+  // Overriding this method is optional, a lot of times the default is enough.
+  LifecycleNode::on_deactivate(state);
 
-    RCLCPP_INFO(this->get_logger(), "on_deactivate() is called.");
+  RCLCPP_INFO(this->get_logger(), "on_deactivate() is called.");
 
-    // We return a success and hence invoke the transition to the next
-    // step: "inactive".
-    // If we returned TRANSITION_CALLBACK_FAILURE instead, the state machine
-    // would stay in the "active" state.
-    // In case of TRANSITION_CALLBACK_ERROR or any thrown exception within
-    // this callback, the state machine transitions to state "errorprocessing".
-    return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
+  // We return a success and hence invoke the transition to the next
+  // step: "inactive".
+  // If we returned TRANSITION_CALLBACK_FAILURE instead, the state machine
+  // would stay in the "active" state.
+  // In case of TRANSITION_CALLBACK_ERROR or any thrown exception within
+  // this callback, the state machine transitions to state "errorprocessing".
+  return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
 
 /// Transition callback for state cleaningup
@@ -117,26 +141,26 @@ ExampleNode::on_deactivate(const rclcpp_lifecycle::State &state)
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 ExampleNode::on_cleanup(const rclcpp_lifecycle::State &)
 {
-    // In our cleanup phase, we release the shared pointers to the
-    // timer and publisher. These entities are no longer available
-    // and our node is "clean".
-    timer_publish_.reset();
-    pub_string_.reset();
-    sub_string_.reset();
-    param_subscriber_.reset();
-    param_sub.reset();
-    param_client_.reset();
-    service_set_bool_.reset();
-    action_server_.reset();
-    RCLCPP_INFO(this->get_logger(), "on_cleanup() is called.");
+  // In our cleanup phase, we release the shared pointers to the
+  // timer and publisher. These entities are no longer available
+  // and our node is "clean".
+  timer_publish_.reset();
+  pub_string_.reset();
+  sub_string_.reset();
+  param_subscriber_.reset();
+  param_sub.reset();
+  param_client_.reset();
+  service_set_bool_.reset();
+  action_server_.reset();
+  RCLCPP_INFO(this->get_logger(), "on_cleanup() is called.");
 
-    // We return a success and hence invoke the transition to the next
-    // step: "unconfigured".
-    // If we returned TRANSITION_CALLBACK_FAILURE instead, the state machine
-    // would stay in the "inactive" state.
-    // In case of TRANSITION_CALLBACK_ERROR or any thrown exception within
-    // this callback, the state machine transitions to state "errorprocessing".
-    return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
+  // We return a success and hence invoke the transition to the next
+  // step: "unconfigured".
+  // If we returned TRANSITION_CALLBACK_FAILURE instead, the state machine
+  // would stay in the "inactive" state.
+  // In case of TRANSITION_CALLBACK_ERROR or any thrown exception within
+  // this callback, the state machine transitions to state "errorprocessing".
+  return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
 
 /// Transition callback for state shutting down
@@ -151,27 +175,27 @@ ExampleNode::on_cleanup(const rclcpp_lifecycle::State &)
  * TRANSITION_CALLBACK_ERROR or any uncaught exceptions to "errorprocessing"
  */
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-ExampleNode::on_shutdown(const rclcpp_lifecycle::State &state)
+ExampleNode::on_shutdown(const rclcpp_lifecycle::State & state)
 {
-    // In our shutdown phase, we release the shared pointers to the
-    // timer and publisher. These entities are no longer available
-    // and our node is "clean".
-    timer_publish_.reset();
-    pub_string_.reset();
-    sub_string_.reset();
-    param_subscriber_.reset();
-    param_sub.reset();
-    param_client_.reset();
-    service_set_bool_.reset();
-    action_server_.reset();
-    RCLCPP_INFO(this->get_logger(), "on shutdown is called from state %s. ", state.label().c_str());
+  // In our shutdown phase, we release the shared pointers to the
+  // timer and publisher. These entities are no longer available
+  // and our node is "clean".
+  timer_publish_.reset();
+  pub_string_.reset();
+  sub_string_.reset();
+  param_subscriber_.reset();
+  param_sub.reset();
+  param_client_.reset();
+  service_set_bool_.reset();
+  action_server_.reset();
+  RCLCPP_INFO(this->get_logger(), "on shutdown is called from state %s. ", state.label().c_str());
 
-    // We return a success and hence invoke the transition to the next
-    // step: "finalized".
-    // If we returned TRANSITION_CALLBACK_FAILURE instead, the state machine
-    // would stay in the current state.
-    // In case of TRANSITION_CALLBACK_ERROR or any thrown exception within
-    // this callback, the state machine transitions to state "errorprocessing".
-    return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
+  // We return a success and hence invoke the transition to the next
+  // step: "finalized".
+  // If we returned TRANSITION_CALLBACK_FAILURE instead, the state machine
+  // would stay in the current state.
+  // In case of TRANSITION_CALLBACK_ERROR or any thrown exception within
+  // this callback, the state machine transitions to state "errorprocessing".
+  return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
-} // namespace 
+}  // namespace example_namespace
