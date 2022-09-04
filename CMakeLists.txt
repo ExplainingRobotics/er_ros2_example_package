@@ -38,7 +38,23 @@ add_library(example_node SHARED
             src/example_lifecycle_management.cpp)
 target_compile_definitions(example_node
   PRIVATE "EXAMPLE_NODE_DLL")
-ament_target_dependencies(example_node rclcpp rclcpp_components rclcpp_action rcpputils rclcpp_lifecycle lifecycle_msgs std_msgs std_srvs example_interfaces Eigen3 tf2 tf2_ros geometry_msgs)
+ament_target_dependencies(
+  example_node
+  rclcpp
+  rclcpp_components
+  rclcpp_action
+  rcpputils
+  rclcpp_lifecycle
+  lifecycle_msgs
+  std_msgs
+  std_srvs
+  example_interfaces
+  Eigen3
+  tf2
+  tf2_ros
+  geometry_msgs
+)
+
 rclcpp_components_register_nodes(example_node "example_namespace::ExampleNode")
 set(node_plugins "${node_plugins}example_namespace::ExampleNode;$<TARGET_FILE:example_node>\n")
 
@@ -51,8 +67,7 @@ endif()
 
 add_executable(example_standalone src/example_standalone.cpp)
 target_link_libraries(example_standalone example_node)
-ament_target_dependencies(example_standalone
-  rclcpp)
+ament_target_dependencies(example_standalone rclcpp)
 
 #############
 #  INSTALL  #
@@ -68,19 +83,19 @@ install(TARGETS
   DESTINATION lib/${PROJECT_NAME})
 
 install(
-    DIRECTORY include/
-    DESTINATION include/${PROJECT_NAME}
-  )
+  DIRECTORY include/
+  DESTINATION include/${PROJECT_NAME}
+)
 
 install(
-    DIRECTORY launch
-    DESTINATION share/${PROJECT_NAME}
-  )
+  DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}
+)
 
 install(
-    DIRECTORY config
-    DESTINATION share/${PROJECT_NAME}
-  )
+  DIRECTORY config
+  DESTINATION share/${PROJECT_NAME}
+)
 
 #############
 #  TESTING  #
