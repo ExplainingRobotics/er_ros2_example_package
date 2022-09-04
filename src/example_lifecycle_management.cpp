@@ -19,7 +19,7 @@
 // SOFTWARE.
 
 #include "er_ros2_example_package/example_node.hpp"
-using namespace std::chrono_literals;
+
 namespace example_namespace
 {
 /// Transition callback for state configuring
@@ -46,7 +46,10 @@ ExampleNode::on_configure(const rclcpp_lifecycle::State &)
   // Check that Eigen (external Library) works
   RCLCPP_INFO_STREAM(this->get_logger(), "Eigen Vecotr Size: " << eigen_vector_.size());
   // Create Timer to publish
-  timer_publish_ = create_wall_timer(500ms, std::bind(&ExampleNode::publishTimer, this));
+  timer_publish_ =
+    create_wall_timer(
+    std::chrono::milliseconds(500),
+    std::bind(&ExampleNode::publishTimer, this));
   timer_heartbeat_ =
     create_wall_timer(heartbeat_period_, std::bind(&ExampleNode::publishHeartbeat, this));
   tf_buffer_ =
@@ -82,7 +85,7 @@ ExampleNode::on_activate(const rclcpp_lifecycle::State & state)
   // Let's sleep for 2 seconds.
   // We emulate we are doing important
   // work in the activating phase.
-  std::this_thread::sleep_for(2s);
+  std::this_thread::sleep_for(std::chrono::seconds(2));
 
   // We return a success and hence invoke the transition to the next
   // step: "active".

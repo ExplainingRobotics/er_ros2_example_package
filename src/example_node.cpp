@@ -23,7 +23,6 @@
 
 #include "er_ros2_example_package/example_node.hpp"
 
-using namespace std::chrono_literals;
 namespace example_namespace
 {
 ExampleNode::ExampleNode(rclcpp::NodeOptions options, bool activate_lifecycle)

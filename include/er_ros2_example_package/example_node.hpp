@@ -53,9 +53,8 @@
 #include "builtin_interfaces/msg/time.hpp"
 #include "geometry_msgs/msg/transform_stamped.hpp"
 
-using namespace std::chrono_literals;
 using Fibonacci = example_interfaces::action::Fibonacci;
-constexpr std::chrono::milliseconds LEASE_DELTA = 20ms;
+constexpr std::chrono::milliseconds LEASE_DELTA = std::chrono::milliseconds(20);
 
 namespace example_namespace
 {
