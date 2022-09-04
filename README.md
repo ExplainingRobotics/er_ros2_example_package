@@ -60,3 +60,27 @@ to your `CMakeLists.txt` and add
 prefix=['xterm -e gdb -ex run --args'],
 ```
 to your launch file. After a crash type `backtrace` to get the backtrace
+
+
+## VS Code Settings
+```
+"python.autoComplete.extraPaths": [
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ],
+    "ros.distro": "humble",
+    "python.analysis.extraPaths": [
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ],
+    "python.formatting.autopep8Path": "/usr/bin/autopep8",
+    "python.formatting.autopep8Args": [
+        "--max-line-length=100"
+    ],
+    "C_Cpp.default.intelliSenseMode": "linux-gcc-x86",
+    "C_Cpp.formatting": "Disabled",
+    "[cpp]": {
+        "editor.defaultFormatter": "zachflower.uncrustify"
+    },
+    "uncrustify.configPath.linux": "/opt/ros/humble/lib/python3.10/site-packages/ament_uncrustify/configuration/ament_code_style.cfg"
+```
