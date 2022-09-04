@@ -21,7 +21,8 @@ def generate_launch_description():
             output="screen",
             emulate_tty=True,
             parameters=[
-                {"example_parameter": "world"}
+                {"example_parameter": "world",
+                "heartbeat_period": 200}
             ]
         )
     ld.add_action(node)
