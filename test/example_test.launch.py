@@ -34,7 +34,7 @@ def generate_launch_description():
     node = Node(
         package='er_ros2_example_package',
         namespace='',
-        executable='example_standalone',
+        executable='example_node',
         name='example_node_test',
         output="screen",
         emulate_tty=True,

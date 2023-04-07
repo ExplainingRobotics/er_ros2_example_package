@@ -12,21 +12,25 @@ For quick iteration you can also directly create a Repository based on this Temp
 ### Creating a new Package / Node out of this Template
 With Search all and replace all the use of the template is quite easy.
 Only search for 
+
 * ExampleNode (Class Name)
 * example_namespace (namespace name)
-* example_node (Shared Lib Name)
-* example_standalone (Executable Name)
+* example (Shared Lib Name)
+* example_node (Executable Name)
 * EXAMPLE_NODE_DLL (DLL Name)
 * er_ros2_example_package (Package Name)
 * example_test (Test Name)
+* example1 (second Node for intra process demo)
+* example_lifecycle_management (cpp file in CMake Lists)
 
 and replace them with your new names. Then rename the folder and files
 
+* example.cpp
 * example_node.cpp
-* example_standalone.cpp
+* example_lifecycle_management.cpp
 * include/er_ros2_example_package
-* example_node.hpp
-* example_node.yaml
+* example.hpp
+* example.yaml
 * example_composed_launch.py
 * example_external_composed_launch.py
 * example_intra_process_launch.py

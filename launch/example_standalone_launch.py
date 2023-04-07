@@ -31,18 +31,18 @@ def generate_launch_description():
     config = os.path.join(
         get_package_share_directory('er_ros2_example_package'),
         'config',
-        'example_node.yaml'
+        'example.yaml'
     )
 
     node = Node(
         package='er_ros2_example_package',
         namespace='',
-        executable='example_standalone',
-        name='example_node',
+        executable='example_node',
+        name='example',
         output="screen",
         emulate_tty=True,
         prefix=['xterm -e gdb -ex run --args'],
-        remappings=[("/example_node/subscribe", "/example_node/publish")],
+        remappings=[("/example/subscribe", "/example/publish")],
         parameters=[
             config
         ]

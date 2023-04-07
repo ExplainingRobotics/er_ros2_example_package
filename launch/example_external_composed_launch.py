@@ -38,7 +38,7 @@ def generate_launch_description():
     config = os.path.join(
         get_package_share_directory('er_ros2_example_package'),
         'config',
-        'example_node.yaml'
+        'example.yaml'
     )
 
     load_composable_nodes = LoadComposableNodes(
@@ -47,7 +47,7 @@ def generate_launch_description():
             ComposableNode(
                 package='er_ros2_example_package',
                 plugin='example_namespace::ExampleNode',
-                name='example_node',
+                name='example',
                 remappings=[],
                 parameters=[config]),
         ],

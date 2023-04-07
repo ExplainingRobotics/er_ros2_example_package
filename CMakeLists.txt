@@ -5,9 +5,6 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-# Add Debugger
-add_compile_options(-g)
-
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
@@ -33,13 +30,13 @@ set(node_plugins "")
 #  BUILD  #
 ###########
 
-add_library(example_node SHARED
-            src/example_node.cpp
+add_library(example SHARED
+            src/example.cpp
             src/example_lifecycle_management.cpp)
-target_compile_definitions(example_node
+target_compile_definitions(example
   PRIVATE "EXAMPLE_NODE_DLL")
 ament_target_dependencies(
-  example_node
+  example
   rclcpp
   rclcpp_components
   rclcpp_action
@@ -55,8 +52,8 @@ ament_target_dependencies(
   geometry_msgs
 )
 
-rclcpp_components_register_nodes(example_node "example_namespace::ExampleNode")
-set(node_plugins "${node_plugins}example_namespace::ExampleNode;$<TARGET_FILE:example_node>\n")
+rclcpp_components_register_nodes(example "example_namespace::ExampleNode")
+set(node_plugins "${node_plugins}example_namespace::ExampleNode;$<TARGET_FILE:example>\n")
 
 # This package installs libraries without exporting them.
 # Export the library path to ensure that the installed libraries are available.
@@ -65,21 +62,21 @@ if(NOT WIN32)
     "${ament_cmake_package_templates_ENVIRONMENT_HOOK_LIBRARY_PATH}")
 endif()
 
-add_executable(example_standalone src/example_standalone.cpp)
-target_link_libraries(example_standalone example_node)
-ament_target_dependencies(example_standalone rclcpp)
+add_executable(example_node src/example_node.cpp)
+target_link_libraries(example_node example)
+ament_target_dependencies(example_node rclcpp)
 
 #############
 #  INSTALL  #
 #############
 install(TARGETS
-example_node
+example
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin)
 
 install(TARGETS
-  example_standalone
+  example_node
   DESTINATION lib/${PROJECT_NAME})
 
 install(
@@ -122,7 +119,7 @@ if(BUILD_TESTING)
   # find_package(launch_testing_ament_cmake REQUIRED)
 
   ament_add_gtest_executable(example_test test/example_test.cpp)
-  target_link_libraries(example_test example_node)
+  target_link_libraries(example_test example)
 
   ament_add_test(example_test
     GENERATE_RESULT_FOR_RETURN_CODE_ZERO

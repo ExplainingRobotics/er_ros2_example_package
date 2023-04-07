@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "er_ros2_example_package/example_node.hpp"
+#include "er_ros2_example_package/example.hpp"
 
 namespace example_namespace
 {

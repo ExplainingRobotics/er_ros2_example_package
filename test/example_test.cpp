@@ -23,7 +23,7 @@
 #include <chrono>
 #include <thread>
 
-#include "er_ros2_example_package/example_node.hpp"
+#include "er_ros2_example_package/example.hpp"
 #include <boost/algorithm/string.hpp>
 
 bool got_string_ = false;

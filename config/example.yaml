@@ -1,8 +1,8 @@
-example_node:
+example:
   ros__parameters:
     example_parameter: world
     heartbeat_period: 200
-example_node1:
+example1:
   ros__parameters:
     example_parameter: world
     heartbeat_period: 200
